@@ -30,24 +30,29 @@ export class PlotComponent implements OnInit {
     labels: {
       format: '{value:%Y-%b-%e}'
     },
-    //categories: this.value_array
   },
    yAxis: {          
       title:{
          text:"Value"
       } 
-   },
-   
-   series: [
+   }
+  ,
+  series: [
     {
       type: 'spline',
         name: 'fluoropore concentration',
-        data: []
+        data: [],
+        tooltip: {
+          valueSuffix: ' µg/m3'
+        }
     },
     {
       type: 'spline',
         name: 'Precipitazione cumulata',
-        data: []
+        data: [],
+        tooltip: {
+          valueSuffix: ' mm'
+        }
     }
   ]
 };
