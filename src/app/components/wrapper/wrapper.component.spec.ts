@@ -1,6 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { WrapperComponent } from './wrapper.component';
+import { PlotComponent } from '../plot/plot.component';
+import { HighchartsChartModule } from 'highcharts-angular';
+import { HttpClient,HttpHandler,HttpHeaders } from '@angular/common/http';
 
 describe('WrapperComponent', () => {
   let component: WrapperComponent;
@@ -8,7 +11,9 @@ describe('WrapperComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ WrapperComponent ]
+      declarations: [ WrapperComponent,PlotComponent ],
+      providers: [HttpClient,HttpHandler],
+      imports: [HighchartsChartModule]
     })
     .compileComponents();
 

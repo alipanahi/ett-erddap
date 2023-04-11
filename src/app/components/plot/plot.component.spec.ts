@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { PlotComponent } from './plot.component';
+import { HighchartsChartModule } from 'highcharts-angular';
+import { HttpClient,HttpHandler,HttpHeaders } from '@angular/common/http';
 
 describe('PlotComponent', () => {
   let component: PlotComponent;
@@ -8,7 +10,9 @@ describe('PlotComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ PlotComponent ]
+      declarations: [ PlotComponent ],
+      providers: [HttpClient, HttpHandler],
+      imports: [HighchartsChartModule]
     })
     .compileComponents();
 

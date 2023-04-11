@@ -10,7 +10,6 @@ import { PlotService } from './plot.service';
 })
 export class PlotComponent implements OnInit {
   constructor(public PlotService: PlotService){}
-  public data:any
   precipitazione:Array<Array<any>>=[]
   fluoropore:Array<Array<any>>=[]
   updateFlag = false;

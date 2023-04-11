@@ -1,12 +1,15 @@
 import { TestBed } from '@angular/core/testing';
 
 import { PlotService } from './plot.service';
+import { HttpClient,HttpHandler,HttpHeaders } from '@angular/common/http';
 
 describe('PlotService', () => {
   let service: PlotService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      providers:[HttpClient,HttpHandler]
+    });
     service = TestBed.inject(PlotService);
   });
 
