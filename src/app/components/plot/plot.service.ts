@@ -8,8 +8,7 @@ import { HttpClient,HttpHeaders } from '@angular/common/http';
 export class PlotService {
 
   constructor(public http: HttpClient) { }
-  public getData(date:any): Observable<any>{
-    let url = `https://www.dss-geremia.it/erddap/tabledap/pmten_air_monitoring.xhtml?Fluoropore_Conc,Precipitazione_cumulata,time&time%3E=${date}`;
+  public getData(url:any): Observable<any>{
     
     return this.http.get<any>(url, {params: {}, responseType: 'text' as 'json'});
   }
