@@ -3,6 +3,7 @@ import * as Highcharts from 'highcharts';
 import HighchartsMore from "highcharts/highcharts-more";
 
 import { PlotService } from './plot.service';
+import { Options } from 'highcharts/highcharts.src';
 HighchartsMore(Highcharts);
 
 @Component({
@@ -12,33 +13,22 @@ HighchartsMore(Highcharts);
 })
 export class PlotComponent implements OnInit {
   constructor(public PlotService: PlotService) { }
-  precipitazione: Array<Array<any>> = []
-  fluoropore: Array<Array<any>> = []
-
-  wind_fluoropore_3:Array<Number> = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-  wind_fluoropore_5:Array<Number> = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-  wind_fluoropore_10:Array<Number> = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-  wind_fluoropore_15:Array<Number> = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-  wind_fluoropore_20:Array<Number> = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-  wind_fluoropore_30:Array<Number> = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-  wind_fluoropore_40:Array<Number> = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-  wind_fluoropore:Array<Number> = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-
-  categories= ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW']
 
   setData(data: any) {
+    let precipitazione: Array<Array<any>> = []
+    let fluoropore: Array<Array<any>> = []
     if (data) {
       Array.from(data).forEach((item: any, index: number) => {
         if (index > 1) {//ignore the first 2 rows, as they are headers
           let child = item.children
-          
+
           let date = new Date(child[2].textContent).getTime()
-          this.fluoropore.push([date, Number(child[0].textContent)])
-          this.precipitazione.push([date, Number(child[1].textContent)])
+          fluoropore.push([date, Number(child[0].textContent)])
+          precipitazione.push([date, Number(child[1].textContent)])
         }
       })
     }
-    const chart = Highcharts.chart('chart-line', {
+    Highcharts.chart('chart-line', {
       chart: {
         type: "spline"
       },
@@ -52,7 +42,7 @@ export class PlotComponent implements OnInit {
         type: 'datetime',
         labels: {
           format: '{value:%Y-%b-%e}'
-        },
+        }
       },
       yAxis: {
         title: {
@@ -64,7 +54,7 @@ export class PlotComponent implements OnInit {
         {
           type: 'spline',
           name: 'fluoropore concentration',
-          data: this.fluoropore,
+          data: fluoropore,
           tooltip: {
             valueSuffix: ' µg/m3'
           }
@@ -72,130 +62,236 @@ export class PlotComponent implements OnInit {
         {
           type: 'spline',
           name: 'Precipitazione cumulata',
-          data: this.precipitazione,
+          data: precipitazione,
           tooltip: {
             valueSuffix: ' mm'
           }
         }
       ]
     } as any)
-    
+
   }
   setWindGraphData(data: any) {
     //console.log(data)
+    let categories = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW']
+    let allSeries:Array<any> = []
+    let legend_data:Array<any> = [
+      //fill the data array with default value 0 as many as categories lenght
+      {name: '1-3',data:Array(categories.length).fill(0)},
+      {name: '3-5',data:Array(categories.length).fill(0)},
+      {name: '5-10',data:Array(categories.length).fill(0)},
+      {name: '10-15',data:Array(categories.length).fill(0)},
+      {name: '15-20',data:Array(categories.length).fill(0)},
+      {name: '20-30',data:Array(categories.length).fill(0)},
+      {name: '30-40',data:Array(categories.length).fill(0)},
+      {name: '>= 40',data:Array(categories.length).fill(0)}
+    ]
+
     if (data) {
       Array.from(data).forEach((item: any, index: number) => {
         if (index > 1) {//ignore the first 2 rows, as they are headers
           let child = item.children
           let cardinal = child[1].textContent
-          let cardinalIndex = this.categories.indexOf(cardinal)
+          let cardinalIndex = categories.indexOf(cardinal)
           let fluo = Number(child[2].textContent)
-          if(fluo<3){
-            this.wind_fluoropore_3[cardinalIndex]=Number(this.wind_fluoropore_3[cardinalIndex]) + Number(child[2].textContent)
-          }else if(fluo<5){
-            this.wind_fluoropore_5[cardinalIndex]=Number(this.wind_fluoropore_5[cardinalIndex]) + Number(child[2].textContent)
-          }else if(fluo < 10){
-            this.wind_fluoropore_10[cardinalIndex]=Number(this.wind_fluoropore_10[cardinalIndex]) + Number(child[2].textContent)
-          }else if(fluo < 15){
-            this.wind_fluoropore_15[cardinalIndex]=Number(this.wind_fluoropore_15[cardinalIndex]) + Number(child[2].textContent)
-          }else if(fluo < 20){
-            this.wind_fluoropore_20[cardinalIndex]=Number(this.wind_fluoropore_20[cardinalIndex]) + Number(child[2].textContent)
-          }else if(fluo < 30){
-            this.wind_fluoropore_30[cardinalIndex]=Number(this.wind_fluoropore_30[cardinalIndex]) + Number(child[2].textContent)
-          }else if(fluo < 40){
-            this.wind_fluoropore_40[cardinalIndex]=Number(this.wind_fluoropore_40[cardinalIndex]) + Number(child[2].textContent)
-          }else{
-            this.wind_fluoropore[cardinalIndex]=Number(this.wind_fluoropore[cardinalIndex]) + Number(child[2].textContent)
+          
+          if (fluo < 3) {
+            legend_data[0].data[cardinalIndex] = Number(legend_data[0].data[cardinalIndex]) + Number(child[2].textContent)
+          } else if (fluo < 5) {
+            legend_data[1].data[cardinalIndex] = Number(legend_data[1].data[cardinalIndex]) + Number(child[2].textContent)
+          } else if (fluo < 10) {
+            legend_data[2].data[cardinalIndex] = Number(legend_data[2].data[cardinalIndex]) + Number(child[2].textContent)
+          } else if (fluo < 15) {
+            legend_data[3].data[cardinalIndex] = Number(legend_data[3].data[cardinalIndex]) + Number(child[2].textContent)
+          } else if (fluo < 20) {
+            legend_data[4].data[cardinalIndex] = Number(legend_data[4].data[cardinalIndex]) + Number(child[2].textContent)
+          } else if (fluo < 30) {
+            legend_data[5].data[cardinalIndex] = Number(legend_data[5].data[cardinalIndex]) + Number(child[2].textContent)
+          } else if (fluo < 40) {
+            legend_data[6].data[cardinalIndex] = Number(legend_data[6].data[cardinalIndex]) + Number(child[2].textContent)
+          } else {
+            legend_data[7].data[cardinalIndex] = Number(legend_data[7].data[cardinalIndex]) + Number(child[2].textContent)
           }
-          
-          //console.log(cardinalIndex)
-          
         }
       })
     }
+    if(legend_data.length>0){
+      //push all generated data to series
+      legend_data.forEach((item:any)=>{
+        allSeries.push({
+          name: item.name,
+          data: item.data
+        })
+      })
+    }
+    
     //console.log(this.wind_fluoropore_3)
     Highcharts.chart('chart-wind', {
 
       chart: {
-      polar: true,
-      type: 'column'
-    },
-    title: {
-      text: "Erdap",
-      align: 'center'
-    },
-  
-    subtitle: {
-      text: 'Test Graph',
-      align: 'center'
-    },
-    xAxis: {
-      
-      tickmarkPlacement: 'on',
-      categories: ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW']
-      
-    },
-    yAxis: {
-      min: 0,
-      endOnTick: false,
-      reversedStacks: false,
-      title: {
-        text: 'Concentration (%)'
+        polar: true,
+        type: 'column'
       },
-    },
-    tooltip: {
-      valueSuffix: ' µg/m3'
-    },
+      title: {
+        text: "Erdap",
+        align: 'center'
+      },
+
+      subtitle: {
+        text: 'Test Graph',
+        align: 'center'
+      },
+      xAxis: {
+
+        tickmarkPlacement: 'on',
+        categories: categories
+
+      },
+      yAxis: {
+        min: 0,
+        endOnTick: false,
+        reversedStacks: false,
+        title: {
+          text: 'Concentration (%)'
+        },
+      },
+      tooltip: {
+        valueSuffix: ' µg/m3'
+      },
+
+      legend: {
+        align: 'right',
+        verticalAlign: 'top',
+        y: 100,
+        layout: 'vertical'
+      },
+      plotOptions: {
+        series: {
+          stacking: 'normal',
+          shadow: false,
+          //groupPadding: 0,
+          pointPlacement: 'on'
+        }
+      },
+
+      series: allSeries
+    } as any)
+
+  }
+  setStackedGraphData(data: any) {
+    let stacked_dates: Array<any> = []
+    let allSeries:Array<any> = []
+    let percentage:Array<any> = []
+    let fluoropore_stacked: Array<Number> = []
+
+    if (data) {
+      //array of legend data base on headers
+      Array.from(data[0].getElementsByTagName('th')).forEach((th:any,i:number)=>{
+        if(i > 1){//the first index is date and the second index is concentration, so ignore it
+          percentage.push({name: th.textContent,data:[]})
+        }
+      })
+      Array.from(data).forEach((item: any, index: number) => {
+        if (index > 1) {//ignore the first 2 rows, as they are headers
+          let child = item.children
+          //array of dates for xAxis
+          let date = new Date(child[0].textContent).getTime()
+          stacked_dates.push(date)
+          //array of concentration data for line graph
+          fluoropore_stacked.push(Number(child[1].textContent))
+          //for every row, update the percentage value according to its corresponding index
+          percentage.forEach((tr:any,i:number)=>{
+            tr.data.push(Number(child[i+2].textContent))
+          })
+        }
+      })
+    }
+    //console.log(percentage)
+    if(percentage.length>0){
+      //push all the generated data to series
+      percentage.forEach((item:any)=>{
+        allSeries.push({
+          name: item.name,
+          type: 'column',
+          yAxis: 1,
+          data: item.data,
+          tooltip: {
+            valueSuffix: ' %'
+          }
     
-    legend: {
-      align: 'right',
-      verticalAlign: 'top',
-      y: 100,
-      layout: 'vertical'
-    },
-    plotOptions: {
-      series: {
-        stacking: 'normal',
-        shadow: false,
-        //groupPadding: 0,
-        pointPlacement: 'on'
+        })
+      })
+    }
+    //push the line graph to series
+    allSeries.push({
+      name: 'Concentration',
+      type: 'spline',
+      data: fluoropore_stacked,
+      tooltip: {
+        valueSuffix: 'µg/m3'
       }
-    },
-  
-    series: [{
-      
-      
-      name: '1-3 µg/m3',
-      data: this.wind_fluoropore_3
-    }, {
-      
-      name: '3-5 µg/m3',
-      data: this.wind_fluoropore_5
-    },{
-      
-      name: '5-10 µg/m3',
-      data: this.wind_fluoropore_10
-    },{
-      
-      name: '10-15 µg/m3',
-      data: this.wind_fluoropore_15
-    },{
-      
-      name: '15-20 µg/m3',
-      data: this.wind_fluoropore_20
-    },{
-      
-      name: '20-30 µg/m3',
-      data: this.wind_fluoropore_30
-    },{
-      
-      name: '30-40 µg/m3',
-      data: this.wind_fluoropore_40
-    },{
-      
-      name: '>40 µg/m3',
-      data: this.wind_fluoropore
-    }]
+    })
+    
+    Highcharts.chart('chart-stacked', {
+      chart: {
+        zoomType: 'xy'
+      },
+      title: {
+        text: 'Sacked Column Graph',
+        align: 'center'
+      },
+      subtitle: {
+        text: 'Source: Erddap'
+      },
+      xAxis: [{
+        categories: stacked_dates,
+        crosshair: true,
+        type: 'datetime',
+        labels: {
+          format: '{value:%Y-%b-%e}'
+        }
+      }],
+      yAxis: [{ // Primary yAxis
+        labels: {
+          format: '{value} µg/m3',
+
+        },
+        title: {
+          text: 'Concentration',
+
+        }
+      }, { // Secondary yAxis
+        title: {
+          text: 'Precentage',
+
+        },
+        labels: {
+          format: '{value} %',
+
+        },
+        opposite: true
+      }],
+      tooltip: {
+        shared: true
+      },
+      legend: {
+        align: 'right',
+        //x: 80,
+        verticalAlign: 'top',
+        y: 100,
+        floating: false,
+        layout: 'vertical'
+
+      },
+      plotOptions: {
+        series: {
+          stacking: 'normal',
+          shadow: false,
+          //groupPadding: 0,
+          pointPlacement: 'on'
+        }
+      },
+      series: allSeries
     } as any)
 
   }
@@ -218,6 +314,17 @@ export class PlotComponent implements OnInit {
       let xmlData = dataparser.parseFromString(data, "text/xml")
       let value = xmlData.getElementsByTagName("tr");
       this.setWindGraphData(value)
+      //console.log(value)
+
+    })
+    //stacked columns graph
+    let stacked_url = 'https://www.dss-geremia.it/erddap/tabledap/pmten_air_monitoring.xhtml?time%2CFluoropore_Conc%2COC_percentage%2CEC_percentage%2CLevo_percentage%2CNO3_percentage%2CSO4_percentage%2CNH4_percentage%2CNa_percentage%2CMg_percentage%2CCl_percentage%2CK_percentage%2CCa_percentage%2CFe_percentage&time%3E=2015-05-23'
+    this.PlotService.getData(stacked_url).subscribe(data => {
+
+      let dataparser = new DOMParser();
+      let xmlData = dataparser.parseFromString(data, "text/xml")
+      let value = xmlData.getElementsByTagName("tr");
+      this.setStackedGraphData(value)
       //console.log(value)
 
     })
