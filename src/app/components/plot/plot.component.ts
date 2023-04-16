@@ -94,7 +94,7 @@ export class PlotComponent implements OnInit {
           let cardinal = child[1].textContent
           let cardinalIndex = categories.indexOf(cardinal)
           let fluo = Number(child[2].textContent)
-          
+          //base on value update the corresponding array
           if (fluo < 3) {
             legend_data[0].data[cardinalIndex] = Number(legend_data[0].data[cardinalIndex]) + Number(child[2].textContent)
           } else if (fluo < 5) {
