@@ -11,7 +11,7 @@ export class AppComponent {
   title = 'ett-erddap';
 
   changeRoute() {
-    console.log(this._router.url)
+    //console.log(this._router.url)
     if(this._router.url==='/graphs')
     {
       this._router.navigateByUrl('/menu')

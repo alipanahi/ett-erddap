@@ -17,6 +17,7 @@ export class PlotComponent implements OnInit {
   setData(data: any) {
     let precipitazione: Array<Array<any>> = []
     let fluoropore: Array<Array<any>> = []
+
     if (data) {
       Array.from(data).forEach((item: any, index: number) => {
         if (index > 1) {//ignore the first 2 rows, as they are headers
@@ -93,21 +94,22 @@ export class PlotComponent implements OnInit {
           let child = item.children
           let cardinal = child[1].textContent
           let cardinalIndex = categories.indexOf(cardinal)
-          let fluo = Number(child[2].textContent)
-          //base on value update the corresponding array
-          if (fluo < 3) {
+          let fluoropore_value = Number(child[2].textContent)
+          //base on value update the corresponding array(match index with cardinal)
+          if (fluoropore_value < 3) {
+            //sum of all values < 3 for the cardinal
             legend_data[0].data[cardinalIndex] = Number(legend_data[0].data[cardinalIndex]) + Number(child[2].textContent)
-          } else if (fluo < 5) {
+          } else if (fluoropore_value < 5) {
             legend_data[1].data[cardinalIndex] = Number(legend_data[1].data[cardinalIndex]) + Number(child[2].textContent)
-          } else if (fluo < 10) {
+          } else if (fluoropore_value < 10) {
             legend_data[2].data[cardinalIndex] = Number(legend_data[2].data[cardinalIndex]) + Number(child[2].textContent)
-          } else if (fluo < 15) {
+          } else if (fluoropore_value < 15) {
             legend_data[3].data[cardinalIndex] = Number(legend_data[3].data[cardinalIndex]) + Number(child[2].textContent)
-          } else if (fluo < 20) {
+          } else if (fluoropore_value < 20) {
             legend_data[4].data[cardinalIndex] = Number(legend_data[4].data[cardinalIndex]) + Number(child[2].textContent)
-          } else if (fluo < 30) {
+          } else if (fluoropore_value < 30) {
             legend_data[5].data[cardinalIndex] = Number(legend_data[5].data[cardinalIndex]) + Number(child[2].textContent)
-          } else if (fluo < 40) {
+          } else if (fluoropore_value < 40) {
             legend_data[6].data[cardinalIndex] = Number(legend_data[6].data[cardinalIndex]) + Number(child[2].textContent)
           } else {
             legend_data[7].data[cardinalIndex] = Number(legend_data[7].data[cardinalIndex]) + Number(child[2].textContent)
@@ -138,7 +140,7 @@ export class PlotComponent implements OnInit {
       },
 
       subtitle: {
-        text: 'Test Graph',
+        text: 'Wind Rose Graph',
         align: 'center'
       },
       xAxis: {
@@ -187,7 +189,7 @@ export class PlotComponent implements OnInit {
     if (data) {
       //array of legend data base on headers
       Array.from(data[0].getElementsByTagName('th')).forEach((th:any,i:number)=>{
-        if(i > 1){//the first index is date and the second index is concentration, so ignore it
+        if(i > 1){//the first index is date and the second index is concentration, so ignore them
           percentage.push({name: th.textContent,data:[]})
         }
       })
@@ -199,9 +201,9 @@ export class PlotComponent implements OnInit {
           stacked_dates.push(date)
           //array of concentration data for line graph
           fluoropore_stacked.push(Number(child[1].textContent))
-          //for every row, update the percentage value according to its corresponding index
-          percentage.forEach((tr:any,i:number)=>{
-            tr.data.push(Number(child[i+2].textContent))
+          //for every row, update the percentage data array for all percentages available
+          percentage.forEach((th:any,i:number)=>{
+            th.data.push(Number(child[i+2].textContent))
           })
         }
       })
