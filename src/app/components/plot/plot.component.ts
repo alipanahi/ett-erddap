@@ -3,7 +3,6 @@ import * as Highcharts from 'highcharts';
 import HighchartsMore from "highcharts/highcharts-more";
 
 import { PlotService } from './plot.service';
-import { Options } from 'highcharts/highcharts.src';
 HighchartsMore(Highcharts);
 
 @Component({
@@ -12,7 +11,7 @@ HighchartsMore(Highcharts);
   styleUrls: ['./plot.component.css']
 })
 export class PlotComponent implements OnInit {
-  constructor(public PlotService: PlotService) { }
+  constructor(private PlotService: PlotService) { }
 
   setData(data: any) {
     let precipitazione: Array<Array<any>> = []
@@ -75,6 +74,7 @@ export class PlotComponent implements OnInit {
   setWindGraphData(data: any) {
     //console.log(data)
     let categories = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW']
+    let categories_total:Array<Number>=Array(categories.length).fill(0)
     let allSeries:Array<any> = []
     let legend_data:Array<any> = [
       //fill the data array with default value 0 as many as categories lenght
@@ -95,6 +95,7 @@ export class PlotComponent implements OnInit {
           let cardinal = child[1].textContent
           let cardinalIndex = categories.indexOf(cardinal)
           let fluoropore_value = Number(child[2].textContent)
+          categories_total[cardinalIndex]=Number(categories_total[cardinalIndex])+fluoropore_value
           //base on value update the corresponding array(match index with cardinal)
           if (fluoropore_value < 3) {
             //sum of all values < 3 for the cardinal
@@ -117,12 +118,16 @@ export class PlotComponent implements OnInit {
         }
       })
     }
+    //console.log(categories_total)
     if(legend_data.length>0){
       //push all generated data to series
       legend_data.forEach((item:any)=>{
+        let data_percentage = item.data.map((value:number,i:number)=>{
+          return Math.ceil((value * 100)/Number(categories_total[i]))
+        })
         allSeries.push({
           name: item.name,
-          data: item.data
+          data: data_percentage
         })
       })
     }
@@ -158,7 +163,7 @@ export class PlotComponent implements OnInit {
         },
       },
       tooltip: {
-        valueSuffix: ' µg/m3'
+        valueSuffix: ' %'
       },
 
       legend: {
@@ -203,7 +208,9 @@ export class PlotComponent implements OnInit {
           fluoropore_stacked.push(Number(child[1].textContent))
           //for every row, update the percentage data array for all percentages available
           percentage.forEach((th:any,i:number)=>{
-            th.data.push(Number(child[i+2].textContent))
+            let value_percentage = (Number(child[i+2].textContent) * 100).toFixed(2)
+            //console.log(value_percentage)
+            th.data.push(Number(value_percentage))
           })
         }
       })
@@ -320,7 +327,7 @@ export class PlotComponent implements OnInit {
 
     })
     //stacked columns graph
-    let stacked_url = 'https://www.dss-geremia.it/erddap/tabledap/pmten_air_monitoring.xhtml?time%2CFluoropore_Conc%2COC_percentage%2CEC_percentage%2CLevo_percentage%2CNO3_percentage%2CSO4_percentage%2CNH4_percentage%2CNa_percentage%2CMg_percentage%2CCl_percentage%2CK_percentage%2CCa_percentage%2CFe_percentage&time%3E=2015-05-23'
+    let stacked_url = 'https://www.dss-geremia.it/erddap/tabledap/pmten_air_monitoring.xhtml?time%2CFluoropore_Conc%2COC_percentage%2CEC_percentage%2CLevo_percentage%2CNO3_percentage%2CSO4_percentage%2CNH4_percentage%2CNa_percentage%2CMg_percentage%2CCl_percentage%2CK_percentage%2CCa_percentage%2CFe_percentage%2CMetalli_percentage&time%3E=2015-05-23'
     this.PlotService.getData(stacked_url).subscribe(data => {
 
       let dataparser = new DOMParser();
