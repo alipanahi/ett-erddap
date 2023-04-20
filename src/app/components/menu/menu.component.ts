@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, FormControl, FormArray} from '@angular/forms';
 import { PlotService } from '../plot/plot.service';
 
@@ -28,7 +29,7 @@ export class MenuComponent {
       {id:'Fe_percentage',name:'Fe_percentage (%)'},
       {id:'Metalli_percentage',name:'Metalli_percentage (Metals_percentage, %)'}
   ]
-  constructor(private fb: FormBuilder,private PlotService: PlotService) { 
+  constructor(private fb: FormBuilder,private PlotService: PlotService,private _router: Router) { 
     this.form = fb.group({
       selected:  new FormArray([])
      });
@@ -57,5 +58,6 @@ export class MenuComponent {
     this.PlotService.getData(url).subscribe(data => {
       console.log(data)
     })
+    this._router.navigateByUrl('/menu-graph')
   }
 }

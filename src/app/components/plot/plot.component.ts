@@ -74,7 +74,8 @@ export class PlotComponent implements OnInit {
   setWindGraphData(data: any) {
     //console.log(data)
     let categories = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW']
-    let categories_total:Array<Number>=Array(categories.length).fill(0)
+    //let categories_total:Array<Number>=Array(categories.length).fill(0)
+    let total_reading:number = 0
     let allSeries:Array<any> = []
     let legend_data:Array<any> = [
       //fill the data array with default value 0 as many as categories lenght
@@ -95,36 +96,39 @@ export class PlotComponent implements OnInit {
           let cardinal = child[1].textContent
           let cardinalIndex = categories.indexOf(cardinal)
           let fluoropore_value = Number(child[2].textContent)
-          categories_total[cardinalIndex]=Number(categories_total[cardinalIndex])+fluoropore_value
+          //categories_total[cardinalIndex]=Number(categories_total[cardinalIndex])+fluoropore_value
+          total_reading = total_reading+1
           //base on value update the corresponding array(match index with cardinal)
           if (fluoropore_value < 3) {
             //sum of all values < 3 for the cardinal
-            legend_data[0].data[cardinalIndex] = Number(legend_data[0].data[cardinalIndex]) + Number(child[2].textContent)
+            //legend_data[0].data[cardinalIndex] = Number(legend_data[0].data[cardinalIndex]) + Number(child[2].textContent)
+            legend_data[0].data[cardinalIndex] = Number(legend_data[0].data[cardinalIndex]) + 1
           } else if (fluoropore_value < 5) {
-            legend_data[1].data[cardinalIndex] = Number(legend_data[1].data[cardinalIndex]) + Number(child[2].textContent)
+            legend_data[1].data[cardinalIndex] = Number(legend_data[1].data[cardinalIndex]) + 1//Number(child[2].textContent)
           } else if (fluoropore_value < 10) {
-            legend_data[2].data[cardinalIndex] = Number(legend_data[2].data[cardinalIndex]) + Number(child[2].textContent)
+            legend_data[2].data[cardinalIndex] = Number(legend_data[2].data[cardinalIndex]) + 1//Number(child[2].textContent)
           } else if (fluoropore_value < 15) {
-            legend_data[3].data[cardinalIndex] = Number(legend_data[3].data[cardinalIndex]) + Number(child[2].textContent)
+            legend_data[3].data[cardinalIndex] = Number(legend_data[3].data[cardinalIndex]) + 1//Number(child[2].textContent)
           } else if (fluoropore_value < 20) {
-            legend_data[4].data[cardinalIndex] = Number(legend_data[4].data[cardinalIndex]) + Number(child[2].textContent)
+            legend_data[4].data[cardinalIndex] = Number(legend_data[4].data[cardinalIndex]) + 1//Number(child[2].textContent)
           } else if (fluoropore_value < 30) {
-            legend_data[5].data[cardinalIndex] = Number(legend_data[5].data[cardinalIndex]) + Number(child[2].textContent)
+            legend_data[5].data[cardinalIndex] = Number(legend_data[5].data[cardinalIndex]) + 1//Number(child[2].textContent)
           } else if (fluoropore_value < 40) {
-            legend_data[6].data[cardinalIndex] = Number(legend_data[6].data[cardinalIndex]) + Number(child[2].textContent)
+            legend_data[6].data[cardinalIndex] = Number(legend_data[6].data[cardinalIndex]) + 1//Number(child[2].textContent)
           } else {
-            legend_data[7].data[cardinalIndex] = Number(legend_data[7].data[cardinalIndex]) + Number(child[2].textContent)
+            legend_data[7].data[cardinalIndex] = Number(legend_data[7].data[cardinalIndex]) + 1//Number(child[2].textContent)
           }
         }
       })
     }
-    //console.log(categories_total)
+    //console.log(legend_data)
     if(legend_data.length>0){
-      //push all generated data to series
+      //calculate the percentage base on number of readings in each direction
       legend_data.forEach((item:any)=>{
         let data_percentage = item.data.map((value:number,i:number)=>{
-          return Math.ceil((value * 100)/Number(categories_total[i]))
+          return Math.ceil((value * 100)/total_reading)
         })
+        //push all generated data to series
         allSeries.push({
           name: item.name,
           data: data_percentage
@@ -163,7 +167,8 @@ export class PlotComponent implements OnInit {
         },
       },
       tooltip: {
-        valueSuffix: ' %'
+        valueSuffix: ' %',
+        shared: true
       },
 
       legend: {
