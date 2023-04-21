@@ -2,7 +2,7 @@
     <div class="list">
         <form [formGroup]="form" (ngSubmit)="submit()">
             <label class="container" *ngFor="let item of list">{{item.name}}
-                <input type="checkbox" [value]="item.id" (change)="onCheckboxChange($event)">
+                <input type="checkbox" [checked]="selectedItems.includes(item.id) ? 'checked' : null"  [value]="item.id" (change)="onCheckboxChange($event)">
                 <span class="checkmark"></span>
             </label>
             <button class="btn" type="submit">Submit</button>

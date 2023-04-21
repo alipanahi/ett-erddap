@@ -1,17 +1,18 @@
-import { Component } from '@angular/core';
+import { Component,OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, FormControl, FormArray} from '@angular/forms';
-import { PlotService } from '../plot/plot.service';
+
 
 @Component({
   selector: 'app-menu',
   templateUrl: './menu.component.html',
   styleUrls: ['./menu.component.css']
 })
-export class MenuComponent {
+export class MenuComponent implements OnInit{
   form: FormGroup;
+  public selectedItems:Array<any>=[]
+
   public list:any = [
-      {id:'time',name:'time (Date, UTC)'},
       {id:'Direzione_prevalente',name:'Direzione_prevalente (cardinal)'},
       {id:'Fluoropore_Conc',name:'Fluoropore_Conc (Fluoropore Concentration, µg/m3)'},
       {id:'Precipitazione_cumulata',name:'Precipitazione_cumulata (mm)'},
@@ -29,7 +30,7 @@ export class MenuComponent {
       {id:'Fe_percentage',name:'Fe_percentage (%)'},
       {id:'Metalli_percentage',name:'Metalli_percentage (Metals_percentage, %)'}
   ]
-  constructor(private fb: FormBuilder,private PlotService: PlotService,private _router: Router) { 
+  constructor(private fb: FormBuilder,private _router: Router) { 
     this.form = fb.group({
       selected:  new FormArray([])
      });
@@ -47,17 +48,20 @@ export class MenuComponent {
      
   submit(){
     let params = this.form.value.selected
-    let url = 'https://www.dss-geremia.it/erddap/tabledap/pmten_air_monitoring.xhtml?'
-    params.forEach((item:any,index:Number)=>{
-      if(index==0){
-        url+=item
-      }else{
-        url+=`%2C`+item
-      }
-    })
-    this.PlotService.getData(url).subscribe(data => {
-      console.log(data)
-    })
-    this._router.navigateByUrl('/menu-graph')
+    this._router.navigateByUrl('/menu-graph', { state: {data: params } });
+    
+    
+    
+  }
+  ngOnInit(): void {
+    //console.log(history.state.data)
+    if(history.state.data){
+      this.selectedItems = history.state.data
+      const selected = (this.form.controls['selected'] as FormArray);
+      this.selectedItems.forEach((item:any)=>{
+        selected.push(new FormControl(item));
+      })
+    }
+    document.getElementById('switch_btn')!.innerHTML="Go to main page"
   }
 }

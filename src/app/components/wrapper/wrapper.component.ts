@@ -1,10 +1,12 @@
-import { Component } from '@angular/core';
+import { Component,OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-wrapper',
   templateUrl: './wrapper.component.html',
   styleUrls: ['./wrapper.component.css']
 })
-export class WrapperComponent {
-
+export class WrapperComponent implements OnInit {
+  ngOnInit(): void {
+    document.getElementById('switch_btn')!.innerHTML="Menu"
+  }
 }

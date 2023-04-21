@@ -12,10 +12,13 @@ export class AppComponent {
 
   changeRoute() {
     //console.log(this._router.url)
-    if(this._router.url==='/graphs')
+    let route = this._router.url
+    if(route==='/graphs')
     {
       this._router.navigateByUrl('/menu')
-    }else{
+    }else if(route==='/menu'){
+      this._router.navigateByUrl('/graphs')
+    }else if(route==='/menu-graph'){
       this._router.navigateByUrl('/graphs')
     }
   }
