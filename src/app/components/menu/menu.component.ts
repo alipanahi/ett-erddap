@@ -10,6 +10,7 @@ import { FormBuilder, FormGroup, FormControl, FormArray} from '@angular/forms';
 })
 export class MenuComponent implements OnInit{
   form: FormGroup;
+  graph:any;
   public selectedItems:Array<any>=[]
 
   public list:any = [
@@ -28,11 +29,35 @@ export class MenuComponent implements OnInit{
       {id:'K_percentage',name:'K_percentage (%)'},
       {id:'Ca_percentage',name:'Ca_percentage (%)'},
       {id:'Fe_percentage',name:'Fe_percentage (%)'},
-      {id:'Metalli_percentage',name:'Metalli_percentage (Metals_percentage, %)'}
+      {id:'Metalli_percentage',name:'Metalli_percentage (Metals_percentage, %)'},
+      {id:'OC',name:'OC (µg/m3)'},
+      {id:'EC',name:'EC (µg/m3)'},
+      {id:'Levo',name:'LEVO (µg/m3)'},
+      {id:'NO3',name:'NO3 (NO3-, µg/m3)'},
+      {id:'SO42',name:'SO42 (SO42-, µg/m3)'},
+      {id:'NH4',name:'NH4 (NH4+, µg/m3)'},
+      {id:'Na',name:'Na (µg/m3)'},
+      {id:'Mg',name:'Mg (µg/m3)'},
+      {id:'Al',name:'Al (µg/m3)'},
+      {id:'Si',name:'Si (µg/m3)'},
+      {id:'S',name:'S (µg/m3)'},
+      {id:'Cl',name:'Cl (µg/m3)'},
+      {id:'K',name:'K (µg/m3)'},
+      {id:'Ca',name:'Ca (µg/m3)'},
+      {id:'Ti',name:'Ti (µg/m3)'},
+      {id:'V',name:'V (µg/m3)'},
+      {id:'Cr',name:'Cr (µg/m3)'},
+      {id:'Mn',name:'Mn (µg/m3)'},
+      {id:'Fe',name:'Fe (µg/m3)'},
+      {id:'Ni',name:'Ni (µg/m3)'},
+      {id:'Cu',name:'Cu (µg/m3)'},
+      {id:'Zn',name:'Zn (µg/m3)'},
+      {id:'As',name:'As (µg/m3)'},
   ]
   constructor(private fb: FormBuilder,private _router: Router) { 
     this.form = fb.group({
-      selected:  new FormArray([])
+      selected:  new FormArray([]),
+      graph:'column'
      });
   }
   onCheckboxChange(event:any) {
@@ -45,13 +70,24 @@ export class MenuComponent implements OnInit{
       selected.removeAt(index);
     }
   }
-     
+  checkAll(e:any){
+    let selected = (this.form.controls['selected'] as FormArray);
+    if (e.target.checked) {
+      
+      this.list.forEach((item:any)=>{
+        this.selectedItems.push(item.id)
+        selected.push(new FormControl(item.id));
+      })
+    }else{
+      this.selectedItems=[]
+      selected.clear()
+    }
+  } 
   submit(){
+    this.graph=this.form.get('graph')?.value;
+    //console.log(this.graph)
     let params = this.form.value.selected
-    this._router.navigateByUrl('/menu-graph', { state: {data: params } });
-    
-    
-    
+    this._router.navigateByUrl('/menu-graph', { state: {data: params,graph:this.graph } });
   }
   ngOnInit(): void {
     //console.log(history.state.data)

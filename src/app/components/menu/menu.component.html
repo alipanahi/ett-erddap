@@ -1,10 +1,21 @@
 <div class="menu">
     <div class="list">
+        <label class="container">
+            <input type="checkbox" (change)="checkAll($event)">Check All
+            <span class="checkmark"></span>
+        </label>
+        <hr/>
         <form [formGroup]="form" (ngSubmit)="submit()">
-            <label class="container" *ngFor="let item of list">{{item.name}}
+            <label class="container" *ngFor="let item of list">
+                {{item.name}}
                 <input type="checkbox" [checked]="selectedItems.includes(item.id) ? 'checked' : null"  [value]="item.id" (change)="onCheckboxChange($event)">
                 <span class="checkmark"></span>
             </label>
+            <input type="radio" id="column" name="graph" checked value="column" formControlName="graph">
+            <label for="column">Column Graph</label>
+            <input type="radio" id="linear" name="graph" value="linear" formControlName="graph">
+            <label for="linear">Linear Graph</label>
+            <br/>
             <button class="btn" type="submit">Submit</button>
         </form>
     </div>
