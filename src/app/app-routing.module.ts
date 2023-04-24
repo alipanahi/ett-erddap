@@ -8,6 +8,7 @@ const routes: Routes = [
   { path: 'graphs',title:'Main page', component: WrapperComponent },
   { path: 'menu', title:'Menu page', component: MenuComponent },
   { path: 'menu-graph', title:'Menu Graph', component: MenuGraphComponent },
+  { path: 'menu-graph/:params', title:'Menu Graph', component: MenuGraphComponent },
   { path: '',   redirectTo: '/graphs', pathMatch: 'full' },
   //{ path: '**', component: WrapperComponent },  // Wildcard route
 ];

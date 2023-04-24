@@ -2,4 +2,8 @@
     
     <div id="chart"></div>
     <a [routerLink]="['/menu']" class="btn" [state]="{ data:params}">back to menu</a>
+    <div class="url_div" *ngIf="url">
+        <p id="generated_url" class="generated-url">{{url}}</p>
+        <input type="button" class="copy-btn" value="Copy URL" (click)="copyUrl()"/>
+    </div>
 </div>

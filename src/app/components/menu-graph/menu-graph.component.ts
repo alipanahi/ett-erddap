@@ -9,8 +9,9 @@ import { PlotService } from '../plot/plot.service';
   styleUrls: ['./menu-graph.component.css']
 })
 export class MenuGraphComponent implements OnInit {
-  constructor(private _router: Router, private PlotService: PlotService, private actRoute: ActivatedRoute) { }
+  constructor(private PlotService: PlotService, private actRoute: ActivatedRoute) { }
   public params: any
+  public url: any
 
   setcolumnGraphData(data: any) {
     let stacked_dates: Array<any> = []
@@ -173,25 +174,52 @@ export class MenuGraphComponent implements OnInit {
     } as any)
 
   }
+  copyUrl(){
+    // Get the text field
+    let copyText = document.getElementById("generated_url")?.innerHTML;
+
+    // Select the text field
+    //copyText!.select();
+    // Copy the text inside the text field
+    navigator.clipboard.writeText(copyText!);
+    alert('URL copied to clipboard!')
+  }
   ngOnInit(): void {
     document.getElementById('switch_btn')!.innerHTML = "Go to main page"
-
-    this.params = history.state.data
     let url = 'https://www.dss-geremia.it/erddap/tabledap/pmten_air_monitoring.xhtml?time'
-    this.params.forEach((item: any) => {
-      url += `%2C` + item
-    })
-    //console.log(history.state.graph)
+    let graph = 'column'
+    this.actRoute.params.subscribe(params => {
+      if (Object.keys(params).length > 0) {
+
+        //console.log(params)
+        for (const [key, value] of Object.entries(params)) {
+          //console.log(`${key}: ${value}`);
+          url += `%2C` + value
+        }
+        //console.log(url)
+      } else {
+        this.params = history.state.data
+        let paramsURL = ''
+        //let url = 'https://www.dss-geremia.it/erddap/tabledap/pmten_air_monitoring.xhtml?time'
+        this.params.forEach((item: any) => {
+          url += `%2C` + item
+          paramsURL += ';' + item + '=' + item
+        })
+        this.url = 'localhost:4200/menu-graph' + paramsURL
+        graph = history.state.graph
+      }
+    });
+    //get data from service base on generated url
     this.PlotService.getData(url).subscribe(data => {
       let dataparser = new DOMParser();
       let xmlData = dataparser.parseFromString(data, "text/xml")
       let value = xmlData.getElementsByTagName("tr");
-      if (history.state.graph == 'column') {
+      if (graph == 'column') {
         this.setcolumnGraphData(value)
       } else {
         this.setLinearData(value)
       }
-
     })
+
   }
 }
