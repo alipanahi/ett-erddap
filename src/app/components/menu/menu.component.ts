@@ -11,6 +11,7 @@ import { FormBuilder, FormGroup, FormControl, FormArray} from '@angular/forms';
 export class MenuComponent implements OnInit{
   form: FormGroup;
   graph:any;
+  unit: any;
   public selectedItems:Array<any>=[]
 
   public list:any = [
@@ -57,7 +58,8 @@ export class MenuComponent implements OnInit{
   constructor(private fb: FormBuilder,private _router: Router) { 
     this.form = fb.group({
       selected:  new FormArray([]),
-      graph:'column'
+      graph:'column',
+      unit: 'microgram'
      });
   }
   onCheckboxChange(event:any) {
@@ -85,9 +87,10 @@ export class MenuComponent implements OnInit{
   } 
   submit(){
     this.graph=this.form.get('graph')?.value;
+    this.unit = this.form.get('unit')?.value;
     //console.log(this.graph)
     let params = this.form.value.selected
-    this._router.navigateByUrl('/menu-graph', { state: {data: params,graph:this.graph } });
+    this._router.navigateByUrl('/menu-graph', { state: {data: params,graph:this.graph,unit:this.unit } });
   }
   ngOnInit(): void {
     //console.log(history.state.data)

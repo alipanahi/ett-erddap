@@ -13,19 +13,28 @@ export class MenuGraphComponent implements OnInit {
   public params: any
   public url: any
 
-  setcolumnGraphData(data: any) {
+  setcolumnGraphData(data: any,unit:any) {
     let stacked_dates: Array<any> = []
     let allSeries: Array<any> = []
     let percentage: Array<any> = []
-
+    let units : Array<string>=[]
     if (data) {
+      //console.log(data)
       //array of legend data base on headers
       Array.from(data[0].getElementsByTagName('th')).forEach((th: any, i: number) => {
         if (i > 0) {//the first index is date, so ignore them
           percentage.push({ name: th.textContent, data: [] })
         }
       })
+      //array of units data base on headers
+      Array.from(data[1].getElementsByTagName('th')).forEach((th: any, i: number) => {
+        if (i > 0) {//the first index is date, so ignore them
+          units.push(th.textContent)
+        }
+      })
+      //console.log(units[1])
       Array.from(data).forEach((item: any, index: number) => {
+        
         if (index > 1) {//ignore the first 2 rows, as they are headers
           let child = item.children
           //array of dates for xAxis
@@ -35,13 +44,21 @@ export class MenuGraphComponent implements OnInit {
           //for every row, update the percentage data array for all percentages available
           percentage.forEach((th: any, i: number) => {
             let value_percentage = Number(child[i + 1].textContent)
-            //console.log(value_percentage)
-            th.data.push(Number(value_percentage))
-          })
+            if(unit==='microgram'){
+              //console.log(value_percentage)
+              th.data.push(Number(value_percentage))
+            }else{
+              if(units[i]==='µg/m3'){
+                //convert the microgaram to milligram
+                th.data.push(Number(value_percentage * 0.001))
+              }else{
+                th.data.push(Number(value_percentage))
+              }
+            }
+          }) 
         }
       })
     }
-    //console.log(percentage)
     if (percentage.length > 0) {
       //push all the generated data to series
       percentage.forEach((item: any) => {
@@ -74,9 +91,9 @@ export class MenuGraphComponent implements OnInit {
           format: '{value:%Y-%b-%e}'
         }
       }],
-      yAxis: [{ // Secondary yAxis
+      yAxis: [{
         title: {
-          text: 'Precentage',
+          text: unit,
 
         },
         labels: {
@@ -109,15 +126,22 @@ export class MenuGraphComponent implements OnInit {
     } as any)
 
   }
-  setLinearData(data: any) {
+  setLinearData(data: any,unit:any) {
 
     let allSeries: Array<any> = []
     let percentage: Array<any> = []
+    let units : Array<string>=[]
     if (data) {
       //array of legend data base on headers
       Array.from(data[0].getElementsByTagName('th')).forEach((th: any, i: number) => {
         if (i > 0) {//the first index is date, so ignore them
           percentage.push({ name: th.textContent, data: [] })
+        }
+      })
+      //array of units data base on headers
+      Array.from(data[1].getElementsByTagName('th')).forEach((th: any, i: number) => {
+        if (i > 0) {//the first index is date, so ignore them
+          units.push(th.textContent)
         }
       })
       Array.from(data).forEach((item: any, index: number) => {
@@ -129,8 +153,19 @@ export class MenuGraphComponent implements OnInit {
           //for every row, update the percentage data array for all percentages available
           percentage.forEach((th: any, i: number) => {
             let value_percentage = Number(child[i + 1].textContent)
+            if(unit==='microgram'){
+              //console.log(value_percentage)
+              th.data.push([date, Number(value_percentage)])
+            }else{
+              if(units[i]==='µg/m3'){
+                //convert the microgaram to milligram
+                th.data.push([date, Number(value_percentage * 0.001)])
+              }else{
+                th.data.push([date, Number(value_percentage)])
+              }
+            }
             //console.log(value_percentage)
-            th.data.push([date, Number(value_percentage)])
+            
           })
         }
       })
@@ -166,7 +201,7 @@ export class MenuGraphComponent implements OnInit {
       },
       yAxis: {
         title: {
-          text: "Value"
+          text: unit
         }
       }
       ,
@@ -188,6 +223,7 @@ export class MenuGraphComponent implements OnInit {
     document.getElementById('switch_btn')!.innerHTML = "Go to main page"
     let url = 'https://www.dss-geremia.it/erddap/tabledap/pmten_air_monitoring.xhtml?time'
     let graph = 'column'
+    let unit = 'microgram'
     this.actRoute.params.subscribe(params => {
       if (Object.keys(params).length > 0) {
 
@@ -207,6 +243,7 @@ export class MenuGraphComponent implements OnInit {
         })
         this.url = 'localhost:4200/menu-graph' + paramsURL
         graph = history.state.graph
+        unit = history.state.unit
       }
     });
     //get data from service base on generated url
@@ -215,9 +252,9 @@ export class MenuGraphComponent implements OnInit {
       let xmlData = dataparser.parseFromString(data, "text/xml")
       let value = xmlData.getElementsByTagName("tr");
       if (graph == 'column') {
-        this.setcolumnGraphData(value)
+        this.setcolumnGraphData(value,unit)
       } else {
-        this.setLinearData(value)
+        this.setLinearData(value,unit)
       }
     })
 

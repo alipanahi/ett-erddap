@@ -11,10 +11,19 @@
                 <input type="checkbox" [checked]="selectedItems.includes(item.id) ? 'checked' : null"  [value]="item.id" (change)="onCheckboxChange($event)">
                 <span class="checkmark"></span>
             </label>
-            <input type="radio" id="column" name="graph" checked value="column" formControlName="graph">
-            <label for="column">Column Graph</label>
-            <input type="radio" id="linear" name="graph" value="linear" formControlName="graph">
-            <label for="linear">Linear Graph</label>
+            <span>
+                <input type="radio" id="microgram" name="unit" checked value="microgram" formControlName="unit">
+                <label for="microgram">µg/m3</label>
+                <input type="radio" id="milligram" name="unit" value="milligram" formControlName="unit">
+                <label for="milligram">mg/m3</label>
+            </span>
+            <br/>
+            <span>
+                <input type="radio" id="column" name="graph" checked value="column" formControlName="graph">
+                <label for="column">Column Graph</label>
+                <input type="radio" id="linear" name="graph" value="linear" formControlName="graph">
+                <label for="linear">Linear Graph</label>
+            </span>
             <br/>
             <button class="btn" type="submit">Submit</button>
         </form>
